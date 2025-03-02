@@ -1,6 +1,6 @@
 from PIL import Image, ImageEnhance, ImageSequence
 from tkinter import filedialog as fd
-from utils import converter, print_frame
+from utils import converter, print_frame, build_pixel_categories
 import numpy as np
 import time
 import sys
@@ -10,15 +10,13 @@ if __name__=="__main__":
     filetypes = (("gif files", "*.gif"), )
 
     file = fd.askopenfilename(filetypes=filetypes)
-    #file=r'/home/mario/Pictures/200w.gif'
+    #file=r'/home/mario/Documents/ASCII art/gifs/200w.gif'
     gif=Image.open(file)
 
     print("Converting..")
 
-    my_frames=[]
-    for frame in ImageSequence.Iterator(gif):
-        my_frames.append(converter(frame))
-
+    my_frames=converter(ImageSequence.Iterator(gif))
+    
     print("Finish")
 
 

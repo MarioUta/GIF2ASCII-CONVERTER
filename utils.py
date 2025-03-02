@@ -2,19 +2,30 @@ from PIL import Image, ImageEnhance, ImageSequence
 import numpy as np
 from math import floor, ceil
 
+pixel_categories={}
+images_data=[]
+width=0
+height=0
 
-def build_pixel_categories(image):
+def build_pixel_categories(images):
+
+    mini=256
+    maxi=-1
+    for image in images:
+        
+        data=np.array(transformer(image).getdata()) 
+        images_data.append(data)
+        mini=min(np.min(np.array(data)),mini)
+        maxi=max(np.max(np.array(data)),maxi)
+
     special_characters=['@','#','G','$','O','>','|','/','^','~',':','*',"'",'.','`']
-    data=np.array(image.getdata())
-
-    intervals=np.linspace(np.max(data),np.min(data),num=len(special_characters)+1)
+    intervals=np.linspace(maxi,mini,num=len(special_characters)+1)
+    intervals=[round(i) for i in intervals]
     intervals = np.array([intervals[:-1], intervals[1:]]).transpose()
-
-    pixel_categories={}
+    
     for character, interval in zip(special_characters,intervals):
         pixel_categories.update( {i:character for i in range((floor(interval[1])),ceil(interval[0])+1)})
 
-    return pixel_categories
 
 
 def transformer(image):
@@ -22,6 +33,9 @@ def transformer(image):
     
     new_width = 100
     image = image.resize((new_width, int(image.height * (new_width / image.width))))
+
+    global width,height
+    width,height=image.size
 
     brightness_factor=0.75
     brightner=ImageEnhance.Brightness(image)
@@ -34,19 +48,21 @@ def transformer(image):
 
 
 
-def converter(image):
-    image=transformer(image)
-    data=np.array(image.getdata())
-    pixel_categories=build_pixel_categories(image)
-    my_ascii=[]
-    for i in data:
-        character=pixel_categories[i]
-        my_ascii.append(character)
-        my_ascii.append(' ')
+def converter(images):
 
-    width,height=image.size
-    my_ascii=np.array(my_ascii).reshape(height,width*2)
-    return my_ascii
+    build_pixel_categories(images)
+    
+    my_frames=[]
+    for images in images_data:
+        my_ascii=[]
+        for i in images:
+            character=pixel_categories[i]
+            my_ascii.append(character)
+            my_ascii.append(' ')
+        my_ascii=np.array(my_ascii).reshape(height,width*2)
+        my_frames.append(my_ascii)
+    
+    return my_frames
 
 
 def print_frame(array):
