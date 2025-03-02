@@ -43,7 +43,7 @@ def print_frame(array):
         print("".join(row))
 
 
-gif=Image.open(r'/home/mario/Pictures/200w.gif')
+gif=Image.open(r'/home/mario/Pictures/WhatsAppVideo2025-03-02at18.53.48-ezgif.com-video-to-gif-converter.gif')
 
 print("Converting..")
 my_frames=[]
@@ -56,7 +56,7 @@ np.set_printoptions(threshold=sys.maxsize)
 while True:
     for my_ascii in my_frames:
         print_frame(my_ascii)
-        time.sleep(0.035)
+        time.sleep(0.05)
         print("\033[H")
 
 
