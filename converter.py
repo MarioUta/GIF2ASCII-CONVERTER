@@ -1,42 +1,62 @@
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageSequence
 import numpy as np
+import time
+from os import system
+import sys
 
-image=Image.open(r'/home/mario/Pictures/a961aa14-b035-40a9-a5bb-354662eb1b67.jpeg')
-image=image.convert("L")
+def converter(image):
+    image=image.convert("L")
+    
+    new_width = 50
+    image = image.resize((new_width, int(image.height * (new_width / image.width))))
 
-brightness_factor=0.75
-brightner=ImageEnhance.Brightness(image)
-brightned_image=brightner.enhance(brightness_factor)
+    brightness_factor=0.75
+    brightner=ImageEnhance.Brightness(image)
+    brightned_image=brightner.enhance(brightness_factor)
 
-contrast_factor = 1
-contraster = ImageEnhance.Contrast(brightned_image)
-contrast_image = contraster.enhance(contrast_factor)
+    contrast_factor = 1
+    contraster = ImageEnhance.Contrast(brightned_image)
+    contrast_image = contraster.enhance(contrast_factor)
 
 
-special_characters=['@','#','G','$','O','>','|','/','^','~',':','*',"'",'.','`']
-data=np.array(contrast_image.getdata())
+    special_characters=['@','#','G','$','O','>','|','/','^','~',':','*',"'",'.','`']
+    data=np.array(contrast_image.getdata())
 
-#contrast_image.show()
+    intervals=np.linspace(np.max(data),np.min(data),num=len(special_characters)+1)
+    intervals = np.array([intervals[:-1], intervals[1:]]).transpose()
 
-intervals=np.linspace(np.max(data),np.min(data),num=len(special_characters)+1)
-intervals = np.array([intervals[:-1], intervals[1:]]).transpose()
+    my_ascii=[]
+    for i in data:
+        for interval, character in zip (intervals,special_characters):
+            if  interval[0]>=i>=interval[1]:
+                my_ascii.append(character)
+                my_ascii.append(' ')
+                break
 
-#print(intervals)
-my_ascii=[]
-for i in data:
-    for interval, character in zip (intervals,special_characters):
-        if  interval[0]>=i>=interval[1]:
-            my_ascii.append(character)
-            my_ascii.append(' ')
-            break
+    width,height=contrast_image.size
+    my_ascii=np.array(my_ascii).reshape(height,width*2)
+    return my_ascii
 
-width,height=contrast_image.size
-my_ascii=np.array(my_ascii).reshape(height,width*2)
 
-with open('my_ascii.txt','w') as f:
-    for i in my_ascii:
-        for j in i:
-            f.write(j)
-        f.write('\n')
+def print_frame(array):
+    for row in array:
+        print("".join(row))
+
+
+gif=Image.open(r'/home/mario/Pictures/200w.gif')
+
+print("Converting..")
+my_frames=[]
+for frame in ImageSequence.Iterator(gif):
+    my_frames.append(converter(frame))
+print("Finish")
+
+
+np.set_printoptions(threshold=sys.maxsize)
+while True:
+    for my_ascii in my_frames:
+        print_frame(my_ascii)
+        time.sleep(0.035)
+        print("\033[H")
 
 
