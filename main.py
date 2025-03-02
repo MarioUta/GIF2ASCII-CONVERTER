@@ -10,7 +10,6 @@ if __name__=="__main__":
     filetypes = (("gif files", "*.gif"), )
 
     file = fd.askopenfilename(filetypes=filetypes)
-    #file=r'/home/mario/Documents/ASCII art/gifs/200w.gif'
     gif=Image.open(file)
 
     print("Converting..")
