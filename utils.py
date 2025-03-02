@@ -1,4 +1,4 @@
-from PIL import Image, ImageEnhance, ImageSequence
+from PIL import  ImageEnhance
 import numpy as np
 from math import floor, ceil
 

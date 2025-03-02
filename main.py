@@ -1,6 +1,6 @@
-from PIL import Image, ImageEnhance, ImageSequence
+from PIL import Image, ImageSequence
 from tkinter import filedialog as fd
-from utils import converter, print_frame, build_pixel_categories
+from utils import converter, print_frame
 import numpy as np
 import time
 import sys
